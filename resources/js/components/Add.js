@@ -1,49 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import api from '../api';
 
-const Edit = () => {
+const Add = () => {
 
-    const {id} = useParams();
+    //add post
+
     const history = useHistory();
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
     const [review, setReview] = useState('');
 
-    const onEditSubmit = async () => {
+    const onAddSubmit = async () => {
         setLoading(true);
         try{
-            await api.updatePost({
+            await api.addPost({
                 name, location, review,
-            }, id);
+            })
             history.push('/');
         }catch {
-            alert('Failed to edit post!')
+            alert('Failed to add post!')
         }finally {
             setLoading(false);
         }
     };
-    
-    useEffect(() => {
-        api.getOnePost(id).then(res => {
-            const result = res.data;
-            const post = result.data;
-            setName(post.name);
-            setLocation(post.location);
-            setReview(post.review);
-        })
-    }, []);
+
 
     return (
-        <div className="edit_container">
+        <div className="Add_container">
             
             <div className="jumbotron text-center bg-dark text-white">
                 <h1><b>FOOD Around YOU</b></h1>  
                 <h3>@ AIA Capital Center</h3>        
                 <p>Recommended Restaurants & Cafes near AIA Capital Center</p>
             </div>
-            
+           
             <div className="row">
 
                 <div className="col-sm-3"></div>
@@ -51,7 +43,7 @@ const Edit = () => {
                 <div className="col-sm-6">
                     <div className="container">
 
-                        <h2>Edit Information</h2>
+                        <h2>Add Restaurants & Cafes</h2>
                         <br></br>
 
                         <form>
@@ -94,10 +86,10 @@ const Edit = () => {
                                     id="submit"
                                     type="submit" 
                                     className="btn btn-success"
-                                    onClick={onEditSubmit}
+                                    onClick={onAddSubmit}
                                     disabled={loading}
                                 >
-                                    {loading ? 'LOADING...' : 'SAVE'}
+                                    {loading ? 'LOADING...' : 'ADD'}
                                 </button>
                             </div>
 
@@ -109,9 +101,9 @@ const Edit = () => {
                 <div className="col-sm-3"></div>
                 
             </div>
-
+             
         </div>
     );
 };
 
-export default Edit;
+export default Add;

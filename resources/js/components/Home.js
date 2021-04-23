@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import api from '../api';
 
 const Home = () => {
 
     //show post
     const [posts, setPosts] = useState(null);
-   
-    useEffect(() => {
+
+    const fetchPosts = () => {
         api.getAllPosts().then(res => {
             const result = res.data;
             setPosts(result.data)
-        })
+        });
+    }
+   
+    useEffect(() => {
+        fetchPosts();
     }, []);
 
     const renderPosts = () => {
@@ -36,18 +40,28 @@ const Home = () => {
 
         return posts.map((post) => (
             <tr>
-                <td>{post.id}</td>
+                {/* <td>{post.id}</td> */}
                 <td>{post.name}</td>
                 <td>{post.location}</td>
                 <td>{post.review}</td>
                 <td>
                     <Link
                         className="btn btn-warning"
-                        to={`/posts/${post.id}`}
+                        to={`/edit/${post.id}`}
                     >
                         EDIT
                     </Link>
-                    <button type="button" className="btn btn-danger">
+                    <button 
+                        type="button" 
+                        className="btn btn-danger"
+                        onClick={() => {
+                            api.deletePost(post.id)
+                            .then(fetchPosts)
+                            .catch(err => {
+                                alert('Failed to delete post with id :' + post.id);
+                            });
+                        }}
+                    >
                         DELETE
                     </button>
                 </td>
@@ -55,104 +69,113 @@ const Home = () => {
         ))
     }
 
-    //add post
-
-    const [loading, setLoading] = useState(false);
-    const [name, setName] = useState('');
-    const [location, setLocation] = useState('');
-    const [review, setReview] = useState('');
-
-    const onAddSubmit = () => {
-
-    }
-
-
     return (
         <div className="Home_container">
             
-            <div className="jumbotron">
-                <h1>Restaurant & Cafe around AIA</h1>         
-                <p>ร้านอาหารหรือเครื่องดื่มที่แนะนำ ใกล้ตึก AIA Capital Center</p>
+            <div className="jumbotron text-center bg-dark text-white">
+                <h1><b>FOOD Around YOU</b></h1>  
+                <h3>@ AIA Capital Center</h3>        
+                <p>Recommended Restaurants & Cafes near AIA Capital Center</p>
             </div>
 
-            
+            <br></br>
+            <div className="text-center">
+                <Link to="/add" className="btn btn-primary">
+                    Add Restaurants & Cafes 
+                </Link>
+            </div>
+            <br></br>
+            <br></br>
+
+            {/* <div className="text-center">
+                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#addpostmodal">
+                    Add Restaurants & Cafes 
+                </button>
+            </div>
+
+            <div className="modal fade" id="addpostmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Add Restaurants & Cafes </h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        
+                        <form id="addform">
+                            
+                            <div className="modal-body">
+
+                                <div className="form-group">
+                                    <label>Name</label>
+                                    <input 
+                                        id="name"
+                                        type="text" 
+                                        className="form-control" 
+                                        name="name"
+                                    />                       
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Location</label>
+                                    <input 
+                                        id="location"
+                                        type="text" 
+                                        className="form-control" 
+                                        name="location"
+                                    />                       
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Review</label>
+                                    <input 
+                                        id="review"
+                                        type="text" 
+                                        className="form-control" 
+                                        name="review"
+                                    />                       
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add Data</button>
+                            </div>
+
+                        </form>  
+
+                    </div>
+                </div>
+            </div> */}
+  
             <div className="row">
+                <div className="col-sm-1"></div>
 
-                <div className="col"></div>
-
-                <div className="container">
-                <div className="col-6">
-
-                    <form>
-
-                    <div className="form-group">
-                        <label>ชื่อร้าน</label>
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            value={name}
-                            onChange={e => setName(e.target.value)} 
-                        />                       
-                    </div>
-
-                    <div className="form-group">
-                        <label>ตำแหน่งที่ตั้ง</label>
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            value={location}
-                            onChange={e => setLocation(e.target.value)} 
-                        />                       
-                    </div>
-
-                    <div className="form-group">
-                        <label>รีวิว</label>
-                        <textarea 
-                            className="form-control"
-                            value={review}
-                            onChange={e => setReview(e.target.value)} 
-                        >
-                        </textarea>                       
-                    </div>
-
-                    <div className="form-group">
-                        <button 
-                            type="button" 
-                            className="btn btn-success"
-                            onClick={onAddSubmit}
-                            disabled={loading}
-                        >
-                            ADD
-                        </button>
-                    </div>
-
-                    </form>    
-
+                <div className="col-sm-10">
+                    <h2>Restaurants & Cafes List</h2>
+                    <br></br>
+                    <table className="table table-sm table-boedered">
+                        <thead className="text-center">
+                            <tr className="thead-dark">
+                                {/* <th>No.</th> */}
+                                <th width="20%">Name</th>
+                                <th width="30%">Location</th>
+                                <th width="30%">Review</th>
+                                <th width="20%">Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody className="text-center" id="response">
+                            {renderPosts()}
+                        </tbody>
+                    </table>
                 </div>
 
-                <div className="col"></div>
-                
+                <div className="col-sm-1"></div>
             </div>
-
-
-            <div className="table-responsive ">
-                <table className="table table-strped mt-4">
-                    <thead>
-                        <tr>
-                            <th>ลำดับที่</th>
-                            <th>ชื่อร้าน</th>
-                            <th>ตำแหน่งที่ตั้ง</th>
-                            <th>รีวิว</th>
-                            <th>แก้ไข</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {renderPosts()}
-                    </tbody>
-                </table>
-            </div>
-            </div>
-
+             
         </div>
     );
 };

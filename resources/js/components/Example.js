@@ -10,6 +10,7 @@ import {
 
 import Home from './Home';
 import Edit from './Edit';
+import Add from './Add';
 
 function Example() {
     return (
@@ -18,6 +19,9 @@ function Example() {
             <Switch>
                 <Route exact path="/">
                     <Home />
+                </Route>
+                <Route path="/add">
+                    <Add />
                 </Route>
                 <Route path="/edit/:id">
                     <Edit />
